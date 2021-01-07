@@ -3,86 +3,140 @@ package tree
 import (
 	"bytes"
 	"encoding/gob"
+	"errors"
 	"fmt"
+	"strconv"
 	"sync"
 )
 
 // HashKey to convert interface to uint
-func HashKey(key interface{}) (uint, error) {
-	var buf bytes.Buffer
-	enc := gob.NewEncoder(&buf)
-	err := enc.Encode(key)
-	if err != nil {
-		return 0, err
-	}
-	data := buf.Bytes()
+func HashKey(key interface{}) (float64, error) {
 
-	var a, b, c uint
-	a, b = 0x9e3779b9, 0x9e3779b9
-	c = 0
-	i := 0
+	switch key.(type) {
+	case string:
+		keyString := key.(string)
+		keyInt, err := strconv.Atoi(keyString)
+		if err != nil {
+			return 0, errors.New("Can't hash key")
+		}
+		return float64(keyInt), nil
+	case int:
+		keyInt := key.(int)
+		return float64(keyInt), nil
+	case int8:
+		keyInt := key.(int8)
+		return float64(keyInt), nil
+	case int16:
+		keyInt := key.(int16)
+		return float64(keyInt), nil
+	case int32:
+		keyInt := key.(int32)
+		return float64(keyInt), nil
+	case int64:
+		keyInt := key.(int64)
+		return float64(keyInt), nil
+	case bool:
+		keyBool := key.(bool)
+		keyInt := 0
+		if keyBool {
+			keyInt = 1
+		}
+		return float64(keyInt), nil
+	case float32:
+		keyFloat32 := key.(float32)
+		return float64(keyFloat32), nil
+	case float64:
+		return key.(float64), nil
+	case uint8:
+		keyUInt := key.(uint8)
+		return float64(keyUInt), nil
+	case uint16:
+		keyUInt := key.(uint16)
+		return float64(keyUInt), nil
+	case uint32:
+		keyUInt := key.(uint32)
+		return float64(keyUInt), nil
+	case uint64:
+		keyUInt := key.(uint64)
+		return float64(keyUInt), nil
+	default:
+		var buf bytes.Buffer
+		enc := gob.NewEncoder(&buf)
+		err := enc.Encode(key)
+		if err != nil {
+			return 0, err
+		}
+		data := buf.Bytes()
 
-	for i = 0; i < len(data)-12; {
-		a += uint(data[i]) | uint(data[i+1]<<8) | uint(data[i+2]<<16) | uint(data[i+3]<<24)
-		i += 4
-		b += uint(data[i]) | uint(data[i+1]<<8) | uint(data[i+2]<<16) | uint(data[i+3]<<24)
-		i += 4
-		c += uint(data[i]) | uint(data[i+1]<<8) | uint(data[i+2]<<16) | uint(data[i+3]<<24)
+		var a, b, c uint
+		a, b = 0x9e3779b9, 0x9e3779b9
+		c = 0
+		i := 0
+
+		for i = 0; i < len(data)-12; {
+			a += uint(data[i]) | uint(data[i+1]<<8) | uint(data[i+2]<<16) | uint(data[i+3]<<24)
+			i += 4
+			b += uint(data[i]) | uint(data[i+1]<<8) | uint(data[i+2]<<16) | uint(data[i+3]<<24)
+			i += 4
+			c += uint(data[i]) | uint(data[i+1]<<8) | uint(data[i+2]<<16) | uint(data[i+3]<<24)
+
+			a, b, c = mix(a, b, c)
+		}
+
+		c += uint(len(data))
+
+		if i < len(data) {
+			a += uint(data[i])
+			i++
+		}
+		if i < len(data) {
+			a += uint(data[i]) << 8
+			i++
+		}
+		if i < len(data) {
+			a += uint(data[i]) << 16
+			i++
+		}
+		if i < len(data) {
+			a += uint(data[i]) << 24
+			i++
+		}
+
+		if i < len(data) {
+			b += uint(data[i])
+			i++
+		}
+		if i < len(data) {
+			b += uint(data[i]) << 8
+			i++
+		}
+		if i < len(data) {
+			b += uint(data[i]) << 16
+			i++
+		}
+		if i < len(data) {
+			b += uint(data[i]) << 24
+			i++
+		}
+
+		if i < len(data) {
+			c += uint(data[i]) << 8
+			i++
+		}
+		if i < len(data) {
+			c += uint(data[i]) << 16
+			i++
+		}
+		if i < len(data) {
+			c += uint(data[i]) << 24
+			i++
+		}
 
 		a, b, c = mix(a, b, c)
+		return float64(c), nil
 	}
 
-	c += uint(len(data))
-
-	if i < len(data) {
-		a += uint(data[i])
-		i++
-	}
-	if i < len(data) {
-		a += uint(data[i]) << 8
-		i++
-	}
-	if i < len(data) {
-		a += uint(data[i]) << 16
-		i++
-	}
-	if i < len(data) {
-		a += uint(data[i]) << 24
-		i++
-	}
-
-	if i < len(data) {
-		b += uint(data[i])
-		i++
-	}
-	if i < len(data) {
-		b += uint(data[i]) << 8
-		i++
-	}
-	if i < len(data) {
-		b += uint(data[i]) << 16
-		i++
-	}
-	if i < len(data) {
-		b += uint(data[i]) << 24
-		i++
-	}
-
-	if i < len(data) {
-		c += uint(data[i]) << 8
-		i++
-	}
-	if i < len(data) {
-		c += uint(data[i]) << 16
-		i++
-	}
-	if i < len(data) {
-		c += uint(data[i]) << 24
-		i++
-	}
-
-	a, b, c = mix(a, b, c)
-	return c, nil
+	return 0, errors.New("Can't hash key")
 }
 
 func mix(a, b, c uint) (uint, uint, uint) {
@@ -117,7 +171,7 @@ func mix(a, b, c uint) (uint, uint, uint) {
 }
 
 type Node struct {
-	key   uint
+	key   float64
 	value interface{}
 	left  *Node
 	right *Node
@@ -250,7 +304,7 @@ func (bst *BSTree) Search(value interface{}) bool {
 	return search(bst.root, key)
 }
 
-func search(n *Node, key uint) bool {
+func search(n *Node, key float64) bool {
 	if n == nil {
 		return false
 	}
@@ -275,7 +329,7 @@ func (bst *BSTree) Remove(value interface{}) {
 	remove(bst.root, key)
 }
 
-func remove(node *Node, key uint) *Node {
+func remove(node *Node, key float64) *Node {
 	if node == nil {
 		return nil
 	}
@@ -332,7 +386,7 @@ func stringify(n *Node, level int) {
 		format += "---[ "
 		level++
 		stringify(n.left, level)
-		fmt.Printf(format+"%v\n", n.value)
+		fmt.Printf(format+"%v\n", n.key)
 		stringify(n.right, level)
 	}
 }

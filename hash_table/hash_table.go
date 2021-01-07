@@ -9,14 +9,12 @@ type HashTable struct {
 }
 
 // get key
-func hashKeyMap(key uint) uint {
+func hashKeyMap(key float64) uint {
 
-
-
-	return key
+	return uint(key)
 }
 
-func (ht HashTable) IsExist (data interface{}) (bool, uint) {
+func (ht HashTable) IsExist(data interface{}) (bool, uint) {
 	if ht.table == nil {
 		return false, 0
 	}
@@ -35,7 +33,7 @@ func (ht HashTable) IsExist (data interface{}) (bool, uint) {
 	return false, 0
 }
 
-func (ht *HashTable) Insert (data interface{}) uint {
+func (ht *HashTable) Insert(data interface{}) uint {
 
 	isExist, index := ht.IsExist(data)
 	if isExist {
@@ -50,7 +48,7 @@ func (ht *HashTable) Insert (data interface{}) uint {
 	return index
 }
 
-func (ht HashTable) GetDataByIndex (index uint) interface{} {
+func (ht HashTable) GetDataByIndex(index uint) interface{} {
 
 	if val, ok := ht.table[index]; ok {
 		return val
@@ -59,11 +57,11 @@ func (ht HashTable) GetDataByIndex (index uint) interface{} {
 	return nil
 }
 
-func (ht HashTable) Size () int {
+func (ht HashTable) Size() int {
 	return len(ht.table)
 }
 
-func (ht HashTable) Remove (data interface{}) bool {
+func (ht HashTable) Remove(data interface{}) bool {
 	isExist, index := ht.IsExist(data)
 	if !isExist {
 		return false

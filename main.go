@@ -8,7 +8,7 @@ import (
 	"fmt"
 )
 
-func main(){
+func main() {
 	//testLinkedList()
 
 	//testStack()
@@ -120,7 +120,7 @@ func TestInOrderTraverse(bst *tree.BSTree) {
 	bst.InOrderTraverse(func(i interface{}) {
 		result = append(result, i.(int))
 	})
-	if !isSameSlice(result, []int{1,2,3,4,5,6,7,8,9,10,11}) {
+	if !isSameSlice(result, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}) {
 		fmt.Println("Traversal order incorrect, got %v", result)
 	}
 }
@@ -130,7 +130,7 @@ func TestPreOrderTraverse(bst *tree.BSTree) {
 	bst.PreOrderTraverse(func(i interface{}) {
 		result = append(result, i.(int))
 	})
-	if !isSameSlice(result, []int{8,4,2,1,3,6,5,7,10,9,11}) {
+	if !isSameSlice(result, []int{8, 4, 2, 1, 3, 6, 5, 7, 10, 9, 11}) {
 		fmt.Println("Traversal order incorrect, got %v instead of %v", result, []string{"8", "4", "2", "1", "3", "6", "5", "7", "10", "9", "11"})
 	}
 }
@@ -140,19 +140,19 @@ func TestPostOrderTraverse(bst *tree.BSTree) {
 	bst.PostOrderTraverse(func(i interface{}) {
 		result = append(result, i.(int))
 	})
-	if !isSameSlice(result, []int{1,3,2,5,7,6,4,9,11,10,8}) {
+	if !isSameSlice(result, []int{1, 3, 2, 5, 7, 6, 4, 9, 11, 10, 8}) {
 		fmt.Println("Traversal order incorrect, got %v instead of %v", result, []string{"1", "3", "2", "5", "7", "6", "4", "9", "11", "10", "8"})
 	}
 }
 
 func TestMin(bst *tree.BSTree) {
-	if fmt.Sprintf("%s", bst.Min()) != "1" {
+	if bst.Min().(int) != 1 {
 		fmt.Println("min should be 1")
 	}
 }
 
 func TestMax(bst *tree.BSTree) {
-	if fmt.Sprintf("%s", bst.Max()) != "11" {
+	if bst.Max().(int) != 11 {
 		fmt.Println("max should be 11")
 	}
 }
@@ -165,7 +165,7 @@ func TestSearch(bst *tree.BSTree) {
 
 func TestRemove(bst *tree.BSTree) {
 	bst.Remove(1)
-	if fmt.Sprintf("%s", bst.Min()) != "2" {
+	if bst.Min().(int) != 2 {
 		fmt.Println("min should be 2")
 	}
 }
